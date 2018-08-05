@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>go test socket - Receiver</title>
+</head>
+<body>
+<h1>Receiver</h1>
+<div>user_id: <span id="user_id"></span></div>
+<label for="message">Received Message: </label>
+<div id="message"></div>
+<script type="text/javascript">
+    let webSocket = null;
+    let webSocketUrl = "ws://127.0.0.1:1234/webSocket";
+    window.onload = function () {
+        console.log("onLoad");
+        let user_id = Date.parse(new Date().toString());
+        document.getElementById("user_id").innerHTML = user_id.toString();
+        webSocket = new WebSocket(webSocketUrl);
+        webSocket.onopen = function () {
+            console.log("connected to " + webSocketUrl);
+            webSocket.send("{\"type\":\"login\",\"user_id\":" + user_id + "}")
+        };
+        webSocket.onclose = function () {
+            if (webSocket) {
+                webSocket.close();
+                webSocket = null;
+            }
+            alert("connection closed");
+        };
+        webSocket.onmessage = function (e) {
+            console.log("message received: " + e.data);
+            let p = document.createElement("p");
+            p.innerHTML = e.data;
+            document.getElementById("message").appendChild(p);
+        };
+        webSocket.onerror = function () {
+            if (webSocket) {
+                webSocket.close();
+                webSocket = null;
+            }
+            alert("connection error");
+        }
+    };
+</script>
+</body>
+</html>

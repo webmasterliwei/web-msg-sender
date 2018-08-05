@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>go test socket - Publisher</title>
+</head>
+<body>
+<h1>Publisher</h1>
+<label for="message">Message: </label>
+<textarea id="message" style="width: 400px;height: 100px;">
+{"type":"publish","user_id":123,"content":"hello world!"}
+</textarea>
+<button onclick="send();">Send Message</button>
+<script type="text/javascript">
+    let webSocket = null;
+    let webSocketUrl = "ws://127.0.0.1:1234/webSocket";
+    window.onload = function () {
+        console.log("onLoad");
+        webSocket = new WebSocket(webSocketUrl);
+        webSocket.onopen = function () {
+            console.log("connected to " + webSocketUrl);
+        };
+        webSocket.onclose = function () {
+            if (webSocket) {
+                webSocket.close();
+                webSocket = null;
+            }
+            console.log("connection closed");
+        };
+        webSocket.onmessage = function (e) {
+            console.log("message received: " + e.data);
+        };
+        webSocket.onerror = function () {
+            if (webSocket) {
+                webSocket.close();
+                webSocket = null;
+            }
+            alert("connection closed");
+        }
+    };
+
+    function send() {
+        let msg = document.getElementById('message').value;
+        if (webSocket == null) {
+            alert("connection failed");
+            return;
+        }
+        webSocket.send(msg);
+    }
+</script>
+</body>
+</html>
